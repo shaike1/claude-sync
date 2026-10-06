@@ -36,6 +36,14 @@ curl -sSL https://raw.githubusercontent.com/shaike1/claude-sync/main/install.sh 
 curl -sSL https://raw.githubusercontent.com/shaike1/claude-sync/main/install-full.sh | bash -s -- https://github.com/YOUR_USERNAME/YOUR_REPO full
 ```
 
+### Windows (PowerShell)
+Requires Python 3 and Git.
+```powershell
+irm https://raw.githubusercontent.com/shaike1/claude-sync/main/install-full.ps1 -OutFile install-full.ps1
+.\install-full.ps1 -Repo https://github.com/YOUR_USERNAME/YOUR_REPO -Level full
+```
+The slash commands are written to `~\.claude\commands`.
+
 ## 🛠️ Quick Setup
 
 ### 1. Create GitHub Repository

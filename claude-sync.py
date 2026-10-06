@@ -10,8 +10,15 @@ import datetime
 import argparse
 import subprocess
 import time
+import platform
+import getpass
+import sys
 from pathlib import Path
 from typing import Dict
+
+# Windows consoles default to a legacy codepage that can't print the emoji output
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 class ClaudeSync:
     def __init__(self, config_path: str = "~/.claude-sync/config.json"):
@@ -42,7 +49,9 @@ class ClaudeSync:
     
     def generate_machine_id(self) -> str:
         """Generate unique machine identifier"""
-        machine_info = f"{os.uname().nodename}-{os.getuid()}"
+        # os.uname() and os.getuid() don't exist on Windows
+        user = os.getuid() if hasattr(os, "getuid") else getpass.getuser()
+        machine_info = f"{platform.node()}-{user}"
         return hashlib.md5(machine_info.encode()).hexdigest()[:8]
     
     def run_git_command(self, args: list, cwd: Path = None) -> tuple:

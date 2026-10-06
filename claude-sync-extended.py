@@ -10,8 +10,15 @@ import hashlib
 import datetime
 import argparse
 import subprocess
+import platform
+import getpass
+import sys
 from pathlib import Path
 from typing import Dict, List
+
+# Windows consoles default to a legacy codepage that can't print the emoji output
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 class ClaudeSyncExtended:
     def __init__(self, config_path: str = "~/.claude-sync/config.json"):
@@ -57,7 +64,9 @@ class ClaudeSyncExtended:
     
     def generate_machine_id(self) -> str:
         """Generate unique machine identifier"""
-        machine_info = f"{os.uname().nodename}-{os.getuid()}"
+        # os.uname() and os.getuid() don't exist on Windows
+        user = os.getuid() if hasattr(os, "getuid") else getpass.getuser()
+        machine_info = f"{platform.node()}-{user}"
         return hashlib.md5(machine_info.encode()).hexdigest()[:8]
     
     def prepare_sync_data(self) -> Path:
@@ -107,7 +116,7 @@ class ClaudeSyncExtended:
         # Create metadata
         metadata = {
             "machine_id": self.config["machine_id"],
-            "hostname": os.uname().nodename,
+            "hostname": platform.node(),
             "timestamp": datetime.datetime.now().isoformat(),
             "sync_level": sync_level,
             "synced_items": list(items_to_sync.keys())
